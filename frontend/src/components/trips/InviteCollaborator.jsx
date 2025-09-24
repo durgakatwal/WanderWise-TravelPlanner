@@ -24,12 +24,15 @@ import {
 import api from "@/api/axios";
 import { toast } from "sonner";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useState } from "react";
+import Loading from "../shared/Loading";
 
 const inviteSchema = z.object({
   email: z.array(z.string().min(5, "Email must be atleast 5 characters")),
 });
 
 const InviteCollaborator = ({ tripId }) => {
+  const [loading, setLoading] = useState(false);
   const form = useForm({
     resolver: zodResolver(inviteSchema),
     defaultValues: {
@@ -46,6 +49,7 @@ const InviteCollaborator = ({ tripId }) => {
   };
 
   const onSubmit = async (data) => {
+    setLoading(true);
     try {
       const newData = {
         email: [data.email],
@@ -56,9 +60,11 @@ const InviteCollaborator = ({ tripId }) => {
     } catch (error) {
       console.error("Error adding expense:", error);
       toast.error("An error occurred while adding expense");
+    } finally {
+      setLoading(false);
     }
   };
-
+  if (loading) return <Loading text="Sending Invitation...." />;
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>

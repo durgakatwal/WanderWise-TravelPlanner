@@ -33,7 +33,10 @@ const PackingList = ({ selectedTripId }) => {
     loading,
     error,
     data: packingItems,
-  } = useApi(`/package-lists/${selectedTripId}`, {}, [dependancy]);
+  } = useApi(`/package-lists/${selectedTripId}`, {}, [
+    dependancy,
+    selectedTripId,
+  ]);
 
   //dialog box close or open
   const [isAddingItem, setIsAddingItem] = useState(false);

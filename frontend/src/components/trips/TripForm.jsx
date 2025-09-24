@@ -35,7 +35,7 @@ import api from "@/api/axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-// ✅ Zod validation schemas
+//  Zod validation schemas
 const expenseSchema = z.object({
   name: z.string().min(1, "Expense name is required"),
   amount: z.number().min(0, "Amount must be 0 or greater"),
@@ -96,7 +96,7 @@ export function TripForm({ initialData }) {
     },
   });
 
-  // ✅ For multiple destinations
+  //  For multiple destinations
   const {
     fields: destinationFields,
     append: appendDestination,

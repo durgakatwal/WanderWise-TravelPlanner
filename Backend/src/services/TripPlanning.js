@@ -28,7 +28,9 @@ export const getTripById = asyncHandler(async (req, res) => {
   const trip = await Trip.findOne({
     _id: req.params.id,
     $or: [{ user: req.user.userId }, { collaborators: req.user.userId }],
-  });
+  })
+    .populate("user", "name email")
+    .populate("collaborators", "name email");
   if (!trip) {
     res.status(404);
     throw new Error("Trip not found");
@@ -260,8 +262,10 @@ export const uploadFiles = asyncHandler(async (req, res) => {
 });
 
 export const deleteFile = asyncHandler(async (req, res) => {
+  const { id, fileId } = req.params;
+
   const trip = await Trip.findOne({
-    _id: req.params.id,
+    _id: id,
     $or: [{ user: req.userId }, { collaborators: req.user.userId }],
   });
 
@@ -269,15 +273,15 @@ export const deleteFile = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Trip not found");
   }
-  const file = trip.files?.find((file) => file?.publicId === req.query.file);
 
+  const file = trip.files?.find((f) => f._id.toString() === fileId);
   if (!file) {
     res.status(404);
     throw new Error("File not found");
   }
 
   await cloudinary.uploader.destroy(file.publicId);
-  trip.files = trip.files?.filter((file) => file?.publicId !== req.query.file);
+  trip.files = trip.files?.filter((f) => f._id.toString() !== fileId);
   await trip.save();
   res.status(200).json({ message: "File deleted successfully" });
 });

@@ -64,7 +64,7 @@ export default function ItineraryPage() {
         </div>
 
         {selectedTripId ? (
-          <ItinerarySection selectedTripId={selectedTripId} />
+          <ItinerarySection selectedTripId={selectedTripId} trips={trips} />
         ) : (
           <Card>
             <CardContent className="text-center py-12">

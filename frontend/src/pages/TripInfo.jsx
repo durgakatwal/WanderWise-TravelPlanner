@@ -30,6 +30,7 @@ import {
   DollarSignIcon,
   PlusIcon,
   User,
+  ExternalLink,
 } from "lucide-react";
 import InviteCollaborator from "@/components/trips/InviteCollaborator";
 import AddFile from "@/components/trips/AddFile";
@@ -53,6 +54,20 @@ const TripInfo = () => {
       await api.delete(`/trips/${id}`);
       toast.success("Trip deleted successfully!");
       navigate("/trips");
+    } catch (err) {
+      console.error(err);
+      toast.error("Some error occurred");
+    }
+  };
+  const deleteFile = async (publicId) => {
+    const parts = publicId.split("/");
+    const fileId = parts[parts.length - 1]; // get the actual ID
+
+    try {
+      const response = await api.delete(`/trips/${id}/files/${fileId}`);
+      console.log(response);
+      toast.success("File deleted successfully!");
+      setDependancy(dependancy + 1);
     } catch (err) {
       console.error(err);
       toast.error("Some error occurred");
@@ -88,7 +103,9 @@ const TripInfo = () => {
     const parts = url.split(".");
     const ext = parts[parts.length - 1];
 
-    if (["png", "jpg", "jpeg", "gif", "heif"].includes(ext.toLowerCase())) {
+    if (
+      ["png", "jpg", "jpeg", "gif", "heif", "avif"].includes(ext.toLowerCase())
+    ) {
       return true;
     } else {
       return false;
@@ -112,7 +129,7 @@ const TripInfo = () => {
     );
   }
 
-  // ✅ Safe defaults
+  // Safe defaults
   const destinations = trip.destinations || [];
   const expenses = trip.budget?.expenses || [];
   const collaborators = trip.collaborators || [];
@@ -298,16 +315,21 @@ const TripInfo = () => {
                       <Users className="h-5 w-5 text-purple-600" />
                       <h3 className="text-lg font-semibold">Collaborators</h3>
                     </div>
-                    <div className="flex flex-wrap gap-3">
-                      {collaborators.map((email, index) => (
+                    <div className="grid md:grid-cols-2 gap-3">
+                      {collaborators.map((member, index) => (
                         <div
                           key={index}
-                          className="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg"
+                          className="flex items-center space-x-4 p-2 bg-gray-50 rounded-lg"
                         >
                           <div className="p-2 bg-amber-400 rounded-full">
                             <User className="w-4 h-4" />
                           </div>
-                          <span className="text-sm">{email}</span>
+                          <div>
+                            <p className="text-sm">{member.name}</p>
+                            <span className="text-sm text-gray-400">
+                              {member.email}
+                            </span>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -315,6 +337,7 @@ const TripInfo = () => {
                 )}
 
                 {/* Files */}
+                {/* Files Section */}
                 {files.length > 0 && (
                   <div>
                     <div className="flex items-center space-x-2 mb-3">
@@ -323,37 +346,49 @@ const TripInfo = () => {
                         Files & Documents
                       </h3>
                     </div>
-                    <div className="grid md:grid-cols-2 gap-3">
-                      {trip.files.map((file, index) => {
-                        if (checkImage(file.url)) {
-                          return (
-                            <div key={index}>
-                              <img
-                                src={file.url}
-                                alt={file._id}
-                                className="w-full"
-                              />
+
+                    {/* Scrollable container */}
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto p-2 border rounded-lg">
+                      {files.map((file, index) => (
+                        <div
+                          key={index}
+                          className="relative group border rounded-lg p-1"
+                        >
+                          {checkImage(file.url) ? (
+                            <img
+                              src={file.url}
+                              alt={file._id}
+                              className="w-full h-48 object-cover rounded-md"
+                            />
+                          ) : (
+                            <div className="flex items-center justify-center h-48 bg-gray-100 rounded-md">
+                              <FileText className="h-10 w-10 text-gray-400" />
                             </div>
-                          );
-                        } else {
-                          return (
-                            <div
-                              key={index}
-                              className="flex items-center justify-between p-3 border rounded-lg"
+                          )}
+                          {/* Overlay buttons */}
+                          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition">
+                            <Button
+                              variant="icon"
+                              size="sm"
+                              className="text-red-600 hover:text-white hover:bg-red-500"
+                              onClick={() => deleteFile(file._id)}
                             >
-                              <div className="flex items-center space-x-2">
-                                <FileText className="h-4 w-4 text-gray-400" />
-                                <span className="text-xs">{file._id}</span>
-                              </div>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                            {!checkImage(file.url) && (
                               <a href={file.url} target="_blank">
-                                <Button variant="ghost" size="sm">
+                                <Button
+                                  variant="icon"
+                                  size="sm"
+                                  className="ml-1"
+                                >
                                   <ExternalLink className="h-4 w-4" />
                                 </Button>
                               </a>
-                            </div>
-                          );
-                        }
-                      })}
+                            )}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}

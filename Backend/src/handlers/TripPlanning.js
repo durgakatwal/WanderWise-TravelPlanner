@@ -44,6 +44,6 @@ router.get("/:id/reviews", authMiddleware, getAllTripsReviews); //tripid/reviews
 router.delete("/:tripId/reviews/:reviewId", authMiddleware, deleteReview); //reviews/reviewid
 
 router.post("/:id/files", upload.array("files"), uploadFiles);
-router.delete("/:id/files", deleteFile);
+router.delete("/:id/files/:fileId", deleteFile);
 
 export default router;

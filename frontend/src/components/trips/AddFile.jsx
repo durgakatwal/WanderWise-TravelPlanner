@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/form";
 import api from "@/api/axios";
 import { toast } from "sonner";
+import { useState } from "react";
+import Loading from "../shared/Loading";
 
 const fileSchema = z.object({
   // file: z.file().min(1, "File is required"),
@@ -29,6 +31,7 @@ const fileSchema = z.object({
 });
 
 const AddFile = ({ tripId, dependancy, setDependancy }) => {
+  const [loading, setLoading] = useState(false);
   const form = useForm({
     resolver: zodResolver(fileSchema),
     defaultValues: {
@@ -37,6 +40,7 @@ const AddFile = ({ tripId, dependancy, setDependancy }) => {
   });
 
   const onSubmit = async (data) => {
+    setLoading(true);
     // console.log(data);
     try {
       const formData = new FormData();
@@ -51,14 +55,18 @@ const AddFile = ({ tripId, dependancy, setDependancy }) => {
       if (response.data._id) {
         console.log("showing toast");
         toast.success("File uploaded successfully!");
+        setDependancy(dependancy + 1);
       } else {
         toast.error("Failed to upload file");
       }
     } catch (error) {
       console.error("Error uploading file:", error);
       toast.error("An error occurred while uploading file");
+    } finally {
+      setLoading(false);
     }
   };
+  if (loading) return <Loading text="Uploading file..." />;
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>

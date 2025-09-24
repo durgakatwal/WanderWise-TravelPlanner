@@ -49,18 +49,42 @@ export const getAllItinerary = asyncHandler(async (req, res) => {
 });
 
 // Get itinerary for a trip by id
+// export const getItinerary = asyncHandler(async (req, res) => {
+//   const { tripId } = req.params;
+
+//   const itineraryItems = await Itinerary.find({ trip: tripId });
+
+//   if (!itineraryItems.length) {
+//     return res
+//       .status(404)
+//       .json({ message: "No itinerary found for this trip" });
+//   }
+
+//   res.json({ itinerary: itineraryItems });
+// });
+
 export const getItinerary = asyncHandler(async (req, res) => {
-  const { tripId } = req.params;
+  const trip = await Trip.findOne({
+    _id: req.params.tripId,
+    user: req.user.userId,
+  });
 
-  const itineraryItems = await Itinerary.find({ trip: tripId });
-
-  if (!itineraryItems.length) {
-    return res
-      .status(404)
-      .json({ message: "No itinerary found for this trip" });
+  if (!trip) {
+    res.status(404);
+    throw new Error("Trip not found");
   }
 
-  res.json({ itinerary: itineraryItems });
+  const itinerary = await Itinerary.findOne({
+    _id: req.params.id,
+    trip: req.params.tripId,
+  });
+
+  if (!itinerary) {
+    res.status(404);
+    throw new Error("Itinerary not found");
+  }
+
+  res.status(200).json(itinerary);
 });
 
 //Update the itinerary

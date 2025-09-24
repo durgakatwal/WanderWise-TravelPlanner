@@ -18,7 +18,8 @@ const EditItinerary = () => {
 
   const newItinerary = {
     ...itinerary,
-    date: itinerary?.date ? itinerary.date.split("T")[0] : "",
+    // date: itinerary?.date ? itinerary.date.split("T")[0] : "",
+    date: itinerary?.date?.split("T")[0],
   };
 
   if (loading) return <Loading />;

@@ -99,6 +99,7 @@ import ItineraryPage from "./pages/Itinerary";
 import AddItinerary from "./pages/AddItinerary";
 import EditItinerary from "./pages/EditItinerary";
 import AcceptInvitation from "./pages/AcceptInvitation";
+import ProfilePage from "./pages/Profile";
 // import Home from "./pages/Home";
 // import About from "./pages/About";
 // import Contact from "./pages/Contact";
@@ -173,6 +174,7 @@ const App = () => {
             path="/itineraries/edit/:id"
             element={<EditItinerary />}
           ></Route>
+          <Route path="/profile" element={<ProfilePage />}></Route>
         </Route>
       </Routes>
     </BrowserRouter>

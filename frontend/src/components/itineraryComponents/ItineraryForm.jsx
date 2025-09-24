@@ -44,8 +44,10 @@ const itinerarySchema = z.object({
 });
 
 export function ItineraryForm({ initialData }) {
+  console.log("initial data :", initialData);
   const [searchParams, setSearchParams] = useSearchParams();
   const tripId = searchParams.get("tripId");
+  const selectedDate = searchParams.get("date");
 
   const navigate = useNavigate();
 
@@ -54,7 +56,7 @@ export function ItineraryForm({ initialData }) {
     defaultValues: initialData || {
       title: "",
       description: "",
-      date: new Date().toISOString().split("T")[0],
+      date: selectedDate || new Date().toISOString().split("T")[0],
       activities: [
         {
           name: "",
@@ -182,7 +184,7 @@ export function ItineraryForm({ initialData }) {
                   <FormItem>
                     <FormLabel>Date</FormLabel>
                     <FormControl>
-                      <Input type="date" {...field} />
+                      <Input type="date" readOnly={selectedDate} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
